@@ -16,11 +16,9 @@ struct ContentView: View {
                 .tabItem { Label("Dashboard", systemImage: "chart.line.uptrend.xyaxis") }
             TimerScreen()
                 .tabItem { Label("Time", systemImage: "timer") }
-            //TrainScreen()
-            TimerScreen() //placeholder
+            TrainScreen()
                 .tabItem { Label("Train", systemImage: "figure.run") }
-            //SettingsScreen()
-            TimerScreen() //placeholder
+            SettingsScreen()
                 .tabItem { Label("Settings", systemImage: "gear") }
         }
     }

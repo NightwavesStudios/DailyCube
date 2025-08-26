@@ -1,10 +1,10 @@
 import SwiftUI
+import UserNotifications
 
 struct TimerScreen: View {
     @StateObject private var timer = SolveTimer()
     @StateObject private var store = Store.shared
     @State private var scramble: String = Scrambler3x3.generate()
-
     // state for WCA-style start
     @State private var isPressed = false
     @State private var readyToStart = false
@@ -21,7 +21,6 @@ struct TimerScreen: View {
                     Text("Do 5 solves for AO5").font(.headline)
                 }
             }
-
             // Scramble
             Text(scramble)
                 .font(.title3)
@@ -29,7 +28,6 @@ struct TimerScreen: View {
                 .padding()
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
-
             // Big timer (tap zone)
             Text(timer.elapsed.asClock())
                 .font(.system(size: 64, weight: .bold, design: .rounded))
@@ -40,16 +38,13 @@ struct TimerScreen: View {
                 .foregroundColor(colorForTimerText())
                 .gesture(longPressGesture)
                 .simultaneousGesture(tapReleaseGesture)
-
             // Controls
             HStack(spacing: 12) {
                 Button(action: { scramble = Scrambler3x3.generate() }) {
                     Label("New Scramble", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .buttonStyle(.bordered)
-
                 Spacer()
-
                 Button(action: toggleTimer) {
                     Label(timer.state == .running ? "Stop" : "Start",
                           systemImage: timer.state == .running ? "pause.circle" : "play.circle")
@@ -57,7 +52,6 @@ struct TimerScreen: View {
                 .buttonStyle(.borderedProminent)
                 .disabled(store.today.solves.count >= 5 && timer.state != .running)
             }
-
             // Today list
             List {
                 Section(header: Text("Today's Solves (\(store.today.solves.count)/5)")) {
@@ -70,7 +64,9 @@ struct TimerScreen: View {
                             } label: {
                                 Image(systemName: "trash")
                             }
+                            .buttonStyle(.plain)
                         }
+                        // IMPORTANT: no onTapGesture that deletes; deletion only via the trash button.
                     }
                 }
             }
@@ -94,6 +90,21 @@ struct TimerScreen: View {
     private var tapReleaseGesture: some Gesture {
         DragGesture(minimumDistance: 0)
             .onEnded { _ in
+                // If timer is running, a tap should stop and save (fast stop).
+                if timer.state == .running {
+                    let t = timer.stop()
+                    let solve = Solve(date: Date(),
+                                      duration: t,
+                                      scramble: scramble,
+                                      penalty: .none)
+                    store.addSolve(solve)
+                    scramble = Scrambler3x3.generate()
+                    // reset WCA style
+                    isPressed = false
+                    readyToStart = false
+                    return
+                }
+                // If readyToStart (after long press) start
                 if readyToStart {
                     timer.start()
                 }
