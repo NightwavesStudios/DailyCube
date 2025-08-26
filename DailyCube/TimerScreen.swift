@@ -5,6 +5,10 @@ struct TimerScreen: View {
     @StateObject private var store = Store.shared
     @State private var scramble: String = Scrambler3x3.generate()
 
+    // state for WCA-style start
+    @State private var isPressed = false
+    @State private var readyToStart = false
+
     var body: some View {
         VStack(spacing: 16) {
             // Header
@@ -26,17 +30,16 @@ struct TimerScreen: View {
                 .background(.thinMaterial)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
 
-            // Big timer
+            // Big timer (tap zone)
             Text(timer.elapsed.asClock())
                 .font(.system(size: 64, weight: .bold, design: .rounded))
                 .monospacedDigit()
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, minHeight: 120)
                 .padding(.vertical, 24)
                 .contentShape(Rectangle())
-                .onTapGesture { toggleTimer() }
-                .onLongPressGesture { timer.reset() }
-                .background(timer.state == .running ? Color.green.opacity(0.15) : Color.clear)
-                .animation(.easeInOut, value: timer.state)
+                .foregroundColor(colorForTimerText())
+                .gesture(longPressGesture)
+                .simultaneousGesture(tapReleaseGesture)
 
             // Controls
             HStack(spacing: 12) {
@@ -59,12 +62,14 @@ struct TimerScreen: View {
             List {
                 Section(header: Text("Today's Solves (\(store.today.solves.count)/5)")) {
                     ForEach(store.today.solves) { s in
-                        SolveRow(dayKey: store.todayKey, solve: s)
-                    }
-                    .onDelete { idx in
-                        for i in idx {
-                            store.deleteSolve(dayKey: store.todayKey,
-                                              solveID: store.today.solves[i].id)
+                        HStack {
+                            SolveRow(dayKey: store.todayKey, solve: s)
+                            Spacer()
+                            Button(role: .destructive) {
+                                store.deleteSolve(dayKey: store.todayKey, solveID: s.id)
+                            } label: {
+                                Image(systemName: "trash")
+                            }
                         }
                     }
                 }
@@ -74,6 +79,36 @@ struct TimerScreen: View {
         .navigationTitle("CubeTime")
     }
 
+    // MARK: - Gestures
+    private var longPressGesture: some Gesture {
+        LongPressGesture(minimumDuration: 0.5)
+            .onChanged { _ in
+                isPressed = true
+                readyToStart = false
+            }
+            .onEnded { _ in
+                readyToStart = true
+            }
+    }
+
+    private var tapReleaseGesture: some Gesture {
+        DragGesture(minimumDistance: 0)
+            .onEnded { _ in
+                if readyToStart {
+                    timer.start()
+                }
+                isPressed = false
+                readyToStart = false
+            }
+    }
+
+    private func colorForTimerText() -> Color {
+        if timer.state == .running { return .primary }
+        if isPressed && !readyToStart { return .red }
+        if readyToStart { return .green }
+        return .primary
+    }
+
     private func toggleTimer() {
         if timer.state == .running {
             let t = timer.stop()
@@ -81,10 +116,14 @@ struct TimerScreen: View {
                               duration: t,
                               scramble: scramble,
                               penalty: .none)
-            Store.shared.addSolve(solve)
+            store.addSolve(solve)
             scramble = Scrambler3x3.generate()
         } else {
             timer.start()
         }
     }
+}
+
+#Preview {
+    ContentView()
 }
