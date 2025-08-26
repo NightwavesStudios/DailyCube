@@ -1,21 +1,17 @@
-//
-//  ContentView.swift
-//  DailyCube
-//
-//  Created by Chris Henry on 8/26/25.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            DashboardScreen()
+                .tabItem { Label("Dashboard", systemImage: "chart.line.uptrend.xyaxis") }
+            TimerScreen()
+                .tabItem { Label("Time", systemImage: "timer") }
+            //TrainScreen()
+                .tabItem { Label("Train", systemImage: "figure.run") }
+            //SettingsScreen()
+                .tabItem { Label("Settings", systemImage: "gear") }
         }
-        .padding()
     }
 }
 
