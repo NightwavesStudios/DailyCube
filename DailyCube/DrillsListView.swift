@@ -11,12 +11,11 @@ struct Drill: Identifiable {
 
 struct DrillsListView: View {
     @State private var drills: [Drill] = [
-        .init(title: "Slow Solves", description: "Slow, deliberate solves focusing on inspection, lookahead and turning efficiency.", videoURL: nil, suggestedTool: nil),
-        .init(title: "Blind Solves", description: "Practice solving with blindfold techniques.", videoURL: nil, suggestedTool: nil),
-        .init(title: "Blind F2L", description: "Focus on blind recognition and execution of F2L.", videoURL: nil, suggestedTool: nil),
-        .init(title: "2-Gen", description: "Repetition of 2-generator algs to build speed.", videoURL: nil, suggestedTool: "PLL Trainer"),
+        .init(title: "Slow Solves", description: "Slow solving is when you deliberately turn at a very slow speed. It is very simple to preform, just pick up a cube and slowly turn it thinking about every move. This helps with discovering better f2l case solutions, improving your cross, and starting to learn lookahead.", videoURL: nil, suggestedTool: nil),
+        .init(title: "Blind Solves", description: "Train lookahead, and cross planning.", videoURL: nil, suggestedTool: nil),
+        .init(title: "2-Gen", description: "Repetition of 2-generator algs to build speed.", videoURL: nil, suggestedTool: "Scramble Generator"),
         .init(title: "PLL Time Attack", description: "Timed PLL-only solves to improve speed.", videoURL: nil, suggestedTool: "PLL Trainer"),
-        .init(title: "TPS Training", description: "Turns-per-second drills with metronome.", videoURL: nil, suggestedTool: "Metronome"),
+        .init(title: "TPS Training", description: "TPS Training is training where you go at max speed to increase your TPS over time. When you do this drill, you will find yourself locking up, but this is not a bad thing. To preform, select an algorithm. Normally this will be a PLL for it's fingertricks and length. Then, simply push it to your max speed.", videoURL: URL(string: "https://www.youtube.com/watch?v=VCz6zq2iyRM"), suggestedTool: "Metronome"),
         .init(title: "Metronome Solves", description: "Solves synced to a metronome beat.", videoURL: nil, suggestedTool: "Metronome")
     ]
     @State private var selectedDrill: Drill?

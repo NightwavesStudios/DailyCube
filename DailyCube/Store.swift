@@ -23,7 +23,7 @@ final class Store: ObservableObject {
         dayMap[todayKey] = rec
         save()
     }
-
+    
     func updateSolve(dayKey: String, solveID: UUID, penalty: Solve.Penalty) {
         guard var rec = dayMap[dayKey],
               let idx = rec.solves.firstIndex(where: { $0.id == solveID }) else { return }
@@ -72,4 +72,6 @@ final class Store: ObservableObject {
             print("Load error: \(error)")
         }
     }
+    
+    
 }

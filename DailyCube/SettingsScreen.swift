@@ -56,7 +56,7 @@ struct SettingsScreen: View {
                     .confirmationDialog("Are you sure you want to delete all data? This cannot be undone.", isPresented: $showDeleteConfirm, titleVisibility: .visible) {
                         Button("Delete All", role: .destructive) {
                             // call store delete all
-                          //  store.deleteAllData()
+                          //store.deleteAllData
                         }
                         Button("Cancel", role: .cancel) {}
                     }
@@ -70,6 +70,7 @@ struct SettingsScreen: View {
                 }
             }
         }
+        
     }
 
     // Helper: convert stored hour/minute to Date
